@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import main.core.Lifecycle;
 import main.spider.Spider;
 import main.util.Constant;
+import main.wordprocess.Segmentor;
 
 public class Container implements Lifecycle{
 	/*
@@ -24,17 +25,28 @@ public class Container implements Lifecycle{
 	private BlockingQueue<StringBuffer> TextDataQueue=new ArrayBlockingQueue<StringBuffer>(Constant.DEFAULT_TEXTDATA_BLOCKINGQUEUE_SIZE,false);
 	
 	/*
-	 * a thread pool
+	 * the thread pool processing spider task
 	 */
 	private Executor spiderWorkers=Executors.newFixedThreadPool(Constant.DEFAULT_THREADPOOL_SIZE);
 	
 	/*
-	 * 
+	 * the data structure storing spiders 
 	 */
 	private Stack<Spider> spiders=new Stack<Spider>();
+	
+	/*
+	 * the thread pool processing separator words
+	 */
+	private Executor segmentWorkers=Executors.newFixedThreadPool(Constant.DEFAULT_SEGMENT_THREADPOOL_SIZE);
+	
+	/*
+	 * the data structure storing segment processor
+	 */
+	private Stack<Segmentor> Segmentors=new Stack<Segmentor>();
+	
 	/*
 	 * singleton design pattern
-	 */
+	 */	
 	private static class ContainerHolder{
 		private static final Container instance=new Container();
 	}
@@ -54,6 +66,13 @@ public class Container implements Lifecycle{
 			spider.start();
 			spiders.push(spider);
 			container.spiderWorkers.execute(spider);
+		}
+		
+		for(int i=0;i<Constant.DEFAULT_SEGMENT_PROCESSOR_NUMBERS;i++){
+			Segmentor segmentor=new Segmentor();
+			segmentor.start();
+			Segmentors.push(segmentor);
+			container.segmentWorkers.execute(segmentor);
 		}
 	}
 	

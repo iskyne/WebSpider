@@ -1,4 +1,4 @@
-package buffer;
+package main.buffer;
 
 import java.net.URL;
 import java.util.LinkedList;

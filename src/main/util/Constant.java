@@ -20,4 +20,10 @@ public class Constant {
 	
 	//the default number of spider thread pool size
 	public static final int DEFAULT_THREADPOOL_SIZE=50;
+	
+	//the default number of segment processor 
+	public static final int DEFAULT_SEGMENT_PROCESSOR_NUMBERS=50;
+	
+	//the default number of segment thread pool size
+	public static final int DEFAULT_SEGMENT_THREADPOOL_SIZE=50;
 }

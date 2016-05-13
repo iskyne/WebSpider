@@ -7,7 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import buffer.WebPageBuffer;
+import main.buffer.WebPageBuffer;
 import main.container.Container;
 import main.core.Lifecycle;
 import main.parser.Parser;

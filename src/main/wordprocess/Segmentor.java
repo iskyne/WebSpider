@@ -19,12 +19,24 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.TreeMap;
+import java.util.concurrent.BlockingQueue;
 
+import main.container.Container;
 import main.core.Lifecycle;
 import main.java.resource.Dictionary;
 import jeasy.analysis.MMAnalyzer;
 
 public class Segmentor implements Runnable,Lifecycle{
+	/*
+	 * container
+	 */
+	private Container container=null;
+	
+	/*
+	 * the text queue
+	 */
+	private BlockingQueue<StringBuffer> textQueue=null;
+	
 	/*
 	 * the word segment
 	 */
@@ -35,6 +47,11 @@ public class Segmentor implements Runnable,Lifecycle{
 	 * the dictionary added if nessesary
 	 */
 	private Dictionary dictionary;
+	
+	/*
+	 * indicates the running state
+	 */
+	private boolean stop=false;
 
 	@SuppressWarnings("unchecked")
 	public WordFrequencyEntry[] segment(File filePath,int k) throws IOException{
@@ -57,13 +74,13 @@ public class Segmentor implements Runnable,Lifecycle{
 			buffer.clear();
 		}
 		String text=content.toString();
-		return segment(text,k);
+		return segment(content,k);
 	}
 	/*
 	 * the core logic for seperator the text into words
 	 */
 	@SuppressWarnings("unchecked")
-	public WordFrequencyEntry[] segment(String content,int k) throws IOException{
+	public WordFrequencyEntry[] segment(StringBuffer content,int k) throws IOException{
 		//get the analyzer
 		if(analyzer==null){
 			analyzer=new MMAnalyzer(10);
@@ -79,7 +96,7 @@ public class Segmentor implements Runnable,Lifecycle{
 			/*
 			 * split the result into string array.
 			 */
-			String segmentRslt=analyzer.segment(content, ",");
+			String segmentRslt=analyzer.segment(content.toString(), ",");
 			words=segmentRslt.split(",");
 			
 		}catch(IOException e){
@@ -163,21 +180,51 @@ public class Segmentor implements Runnable,Lifecycle{
 	}
 	
 	@Override
-	public void start() {
+	public synchronized void start() {
 		// TODO Auto-generated method stub
-		
+		if(container==null){
+			container=Container.getInstance();
+		}
+		this.textQueue=container.getTextQueue();
+		this.stop=false;
 	}
 	
 	@Override
-	public void stop() {
+	public synchronized void stop() {
 		// TODO Auto-generated method stub
-		
+		this.stop=true;
+	}
+	
+	/*
+	 * clear the object state
+	 */
+	public void clear(){
+		this.container=null;
+		this.textQueue=null;
 	}
 	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		while(!stop){
+			StringBuffer text = null;
+			try {
+				text = textQueue.take();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			WordFrequencyEntry[] entrys = null;
+			try {
+				entrys = segment(text, 1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			for(WordFrequencyEntry<Integer,String> entry:entrys){
+				System.out.println(entry.getK()+" "+entry.getV());
+			}
+		}
 	}
 	
 	/*
@@ -197,7 +244,7 @@ public class Segmentor implements Runnable,Lifecycle{
 		Segmentor.WordFrequencyEntry[] entrys = null;
 		String file1="file1";
 		try {
-			entrys = seg.segment(file1,3);
+			entrys = seg.segment(new File(file1),3);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
