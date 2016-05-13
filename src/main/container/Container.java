@@ -99,7 +99,7 @@ public class Container implements Lifecycle{
 	public static void main(String args[]){
 		Container container=Container.getInstance();
 		try {
-			container.getURLQueue().add(new URL("http://politics.people.com.cn/n1/2016/0512/c1001-28345037.html"));
+			container.getURLQueue().add(new URL("http://localhost:8080/WebServer/"));
 			container.start();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block

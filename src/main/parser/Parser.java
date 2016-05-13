@@ -18,7 +18,7 @@ public class Parser {
 		//System.out.println(page.toString());
 		WebPageBuffer result=new WebPageBuffer();
 		//TODO get utls in the page
-		result.addRul(new URL("http://politics.people.com.cn/n1/2016/0512/c1001-28345037.html"));
+		result.addRul(new URL("http://localhost:8080/WebServer/"));
 		
 		//get the article title
 		Pattern p=Pattern.compile(Constant.REGEX_MAPPING_TITLE);
@@ -32,7 +32,8 @@ public class Parser {
 		//get the content under title
 		int index=page.indexOf(title)+title.length();
 		//StringBuffer articleContent=getArticleContent(page,index).append(title);
-		StringBuffer articleContent=new StringBuffer("为人民服务，习近平");
+		StringBuffer articleContent=new StringBuffer("互联网发展要适应人民期待和需求，让人民群众共享互联网发展成果，"
+				+ "这是网信工作座谈会上高度强调的内容。据记者统计，“以人民为中心”的发展思想在十多个省份会议中都有所提及。");
 		result.setArticle(articleContent);
 		System.out.println(articleContent);
 		return result;
