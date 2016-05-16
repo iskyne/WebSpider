@@ -1,11 +1,18 @@
 package main.parser;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import main.buffer.WebPageBuffer;
 import main.util.Constant;
@@ -15,27 +22,28 @@ public class Parser {
 	 * get the urls and article in the page.
 	 */
 	public static WebPageBuffer parse(StringBuffer page) throws MalformedURLException{
-		//System.out.println(page.toString());
+		//System.out.println(page.toString().substring(0, 100));
 		WebPageBuffer result=new WebPageBuffer();
-		//TODO get utls in the page
-		result.addRul(new URL("http://localhost:8080/WebServer/"));
-		
-		//get the article title
-		Pattern p=Pattern.compile(Constant.REGEX_MAPPING_TITLE);
-		Matcher m=p.matcher(page);
-		String title="学习贯彻习近平网信座谈会讲话 各省“一把手”表态";
-		while(m.find()){
-			title=m.group();
-			System.out.println(title);
+		//
+		Document doc=Jsoup.parse(page.toString());
+
+		Elements elements=doc.select("a");
+
+		Iterator<Element> it=elements.iterator();
+		while(it.hasNext()){
+			Element element = it.next();
+			String urlStr=element.attr("href");
+			if(urlStr.indexOf("http://")==0){
+				URL url=new URL(urlStr);
+				result.addUrl(url);
+			}
 		}
-		
-		//get the content under title
-		int index=page.indexOf(title)+title.length();
-		//StringBuffer articleContent=getArticleContent(page,index).append(title);
-		StringBuffer articleContent=new StringBuffer("互联网发展要适应人民期待和需求，让人民群众共享互联网发展成果，"
-				+ "这是网信工作座谈会上高度强调的内容。据记者统计，“以人民为中心”的发展思想在十多个省份会议中都有所提及。");
-		result.setArticle(articleContent);
-		System.out.println(articleContent);
+		Element element1=doc.select("body").first();
+
+		if(element1!=null&&element1.hasText()){
+			result.setArticle(new StringBuffer(element1.text()));
+		}
+		//
 		return result;
 	} 
 	

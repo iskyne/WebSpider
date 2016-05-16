@@ -36,7 +36,7 @@ public class Spider implements Runnable,Lifecycle{
 		int len=0;
 		StringBuffer contentBuffer=new StringBuffer(4086);
 		while((len=data.read(buffer))!=-1){
-			contentBuffer.append(new String(buffer,0,len));
+			contentBuffer.append(new String(buffer,0,len,Container.utf8Charset));
 		}
 		
 		return Parser.parse(contentBuffer);
@@ -47,10 +47,14 @@ public class Spider implements Runnable,Lifecycle{
 		// TODO Auto-generated method stub
 		while(!stop){
 			try {
+				Thread.currentThread().sleep(2000);
 				URL url=urlsQueue.take();
 				WebPageBuffer parseResult=crawlContent(url);
-				urlsQueue.addAll(parseResult.getUrls());
-				this.textQueue.add(parseResult.getArticle());
+				for(URL u:parseResult.getUrls()){
+					urlsQueue.put(u);
+				}
+				this.container.log.log(parseResult.getArticle().toString());
+				this.textQueue.put(parseResult.getArticle());
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -82,11 +82,12 @@ public class Segmentor implements Runnable,Lifecycle{
 	@SuppressWarnings("unchecked")
 	public WordFrequencyEntry[] segment(StringBuffer content,int k) throws IOException{
 		//get the analyzer
+		//this.container.log.log(content.toString());
 		if(analyzer==null){
 			analyzer=new MMAnalyzer(10);
 			if(dictionary==null){
 				dictionary=Dictionary.getInstance();
-				analyzer.addDictionary(dictionary.getReader());
+				//analyzer.addDictionary(dictionary.getReader());
 			}
 		}
 		

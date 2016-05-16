@@ -29,7 +29,7 @@ public class WebPageBuffer {
 		this.urls = urls;
 	}
 	
-	public void addRul(URL url){
+	public void addUrl(URL url){
 		this.urls.add(url);
 	}
 	

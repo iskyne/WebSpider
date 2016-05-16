@@ -2,6 +2,7 @@ package main.container;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -9,6 +10,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import main.core.Lifecycle;
+import main.logger.Log;
 import main.spider.Spider;
 import main.util.Constant;
 import main.wordprocess.Segmentor;
@@ -44,6 +46,15 @@ public class Container implements Lifecycle{
 	 */
 	private Stack<Segmentor> Segmentors=new Stack<Segmentor>();
 	
+	/*
+	 *  charset
+	 */
+	public static final Charset utf8Charset=Charset.forName("utf-8");
+	
+	/*
+	 * logger
+	 */
+	public Log log=new Log();
 	/*
 	 * singleton design pattern
 	 */	
