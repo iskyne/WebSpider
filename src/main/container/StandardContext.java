@@ -9,13 +9,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import main.core.Container;
 import main.core.Lifecycle;
-import main.logger.Log;
-import main.spider.Spider;
+import main.logger.FileLog;
+import main.parser.Parser;
+import main.parser.StandardParser;
+import main.spider.StandardSpider;
 import main.util.Constant;
 import main.wordprocess.Segmentor;
 
-public class Container implements Lifecycle{
+public class StandardContext implements Context{
 	/*
 	 * the blocking queue for store the urls which not be processed
 	 */
@@ -34,7 +37,7 @@ public class Container implements Lifecycle{
 	/*
 	 * the data structure storing spiders 
 	 */
-	private Stack<Spider> spiders=new Stack<Spider>();
+	private Stack<StandardSpider> spiders=new Stack<StandardSpider>();
 	
 	/*
 	 * the thread pool processing separator words
@@ -52,17 +55,21 @@ public class Container implements Lifecycle{
 	public static final Charset utf8Charset=Charset.forName("utf-8");
 	
 	/*
+	 * the web page parser
+	 */
+	public final Parser parser=StandardParser.getInstance();
+	/*
 	 * logger
 	 */
-	public Log log=new Log();
+	public FileLog log=new FileLog();
 	/*
 	 * singleton design pattern
 	 */	
 	private static class ContainerHolder{
-		private static final Container instance=new Container();
+		private static final StandardContext instance=new StandardContext();
 	}
 	
-	public static Container getInstance(){
+	public static StandardContext getInstance(){
 		return ContainerHolder.instance;
 	}
 	
@@ -71,9 +78,9 @@ public class Container implements Lifecycle{
 	 */
 	@Override
 	public void start(){
-		Container container=Container.getInstance();
+		StandardContext container=StandardContext.getInstance();
 		for(int i=0;i<Constant.DEFAULT_SPIDERS_NUMBERS;i++){
-			Spider spider=new Spider();
+			StandardSpider spider=new StandardSpider();
 			spider.start();
 			spiders.push(spider);
 			container.spiderWorkers.execute(spider);
@@ -107,11 +114,25 @@ public class Container implements Lifecycle{
 		return this.TextDataQueue;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * get the parser
+	 */
+	public Parser getParser(){
+		return this.parser;
+	}
+	
+	@Override
+	public Container getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public static void main(String args[]){
-		Container container=Container.getInstance();
+		StandardContext context=StandardContext.getInstance();
 		try {
-			container.getURLQueue().add(new URL("http://localhost:8080/WebServer/"));
-			container.start();
+			context.getURLQueue().add(new URL("http://localhost:8080/WebServer/"));
+			context.start();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

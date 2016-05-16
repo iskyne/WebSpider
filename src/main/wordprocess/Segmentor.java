@@ -21,16 +21,18 @@ import java.util.Queue;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 
-import main.container.Container;
+import main.container.Context;
+import main.container.StandardContext;
 import main.core.Lifecycle;
 import main.java.resource.Dictionary;
+import main.java.resource.StandardDictionary;
 import jeasy.analysis.MMAnalyzer;
 
 public class Segmentor implements Runnable,Lifecycle{
 	/*
 	 * container
 	 */
-	private Container container=null;
+	private Context context=null;
 	
 	/*
 	 * the text queue
@@ -86,7 +88,7 @@ public class Segmentor implements Runnable,Lifecycle{
 		if(analyzer==null){
 			analyzer=new MMAnalyzer(10);
 			if(dictionary==null){
-				dictionary=Dictionary.getInstance();
+				dictionary=StandardDictionary.getInstance();
 				//analyzer.addDictionary(dictionary.getReader());
 			}
 		}
@@ -183,10 +185,10 @@ public class Segmentor implements Runnable,Lifecycle{
 	@Override
 	public synchronized void start() {
 		// TODO Auto-generated method stub
-		if(container==null){
-			container=Container.getInstance();
+		if(context==null){
+			context=StandardContext.getInstance();
 		}
-		this.textQueue=container.getTextQueue();
+		this.textQueue=context.getTextQueue();
 		this.stop=false;
 	}
 	
@@ -200,7 +202,7 @@ public class Segmentor implements Runnable,Lifecycle{
 	 * clear the object state
 	 */
 	public void clear(){
-		this.container=null;
+		this.context=null;
 		this.textQueue=null;
 	}
 	
