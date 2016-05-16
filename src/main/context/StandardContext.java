@@ -1,4 +1,4 @@
-package main.container;
+package main.context;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import main.core.Container;
 import main.core.Lifecycle;
 import main.logger.FileLog;
+import main.logger.Log;
 import main.parser.Parser;
 import main.parser.StandardParser;
 import main.spider.StandardSpider;
@@ -61,7 +62,7 @@ public class StandardContext implements Context{
 	/*
 	 * logger
 	 */
-	public FileLog log=new FileLog();
+	public Log log=FileLog.getInstance();
 	/*
 	 * singleton design pattern
 	 */	
@@ -92,6 +93,9 @@ public class StandardContext implements Context{
 			Segmentors.push(segmentor);
 			container.segmentWorkers.execute(segmentor);
 		}
+		
+		parser.setContext(this);
+		log.setContext(this);
 	}
 	
 	@Override
@@ -120,6 +124,11 @@ public class StandardContext implements Context{
 	 */
 	public Parser getParser(){
 		return this.parser;
+	}
+	
+	@Override
+	public Log getLog(){
+		return this.log;
 	}
 	
 	@Override

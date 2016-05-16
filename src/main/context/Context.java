@@ -1,25 +1,30 @@
-package main.container;
+package main.context;
 
 import java.net.URL;
 import java.util.concurrent.BlockingQueue;
 
 import main.core.Container;
+import main.logger.Log;
 import main.parser.Parser;
 
 public interface Context extends Container{
 	/*
 	 * get the parser
 	 */
-	Parser getParser();
+	public Parser getParser();
 	
 	/*
 	 * get the urls queue
 	 */
-	BlockingQueue<URL> getURLQueue();
+	public BlockingQueue<URL> getURLQueue();
 	
 	/*
 	 * get the text queue
 	 */
-	BlockingQueue<StringBuffer> getTextQueue();
-
+	public BlockingQueue<StringBuffer> getTextQueue();
+	
+	/*
+	 * get the logger
+	 */
+	public Log getLog();
 }

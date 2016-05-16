@@ -7,8 +7,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import main.container.Context;
-import main.container.StandardContext;
+import main.context.Context;
+import main.context.StandardContext;
 import main.core.Lifecycle;
 import main.parser.Parser;
 import main.parser.StandardParser;

@@ -14,12 +14,16 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import main.context.Context;
+import main.logger.Log;
 import main.store.StringResource;
 import main.store.TransferBuffer;
 import main.store.WebPageBuffer;
 import main.util.Constant;
 
 public class StandardParser implements Parser{
+	
+	private Context context;
 	/*
 	 * get the urls and article in the page.
 	 */
@@ -30,12 +34,16 @@ public class StandardParser implements Parser{
 	public static Parser getInstance(){
 		return ParserHolder.instance;
 	}
+	
 	public TransferBuffer parse(StringBuffer page) throws MalformedURLException{
 		//System.out.println(page.toString().substring(0, 100));
 		TransferBuffer result=new WebPageBuffer();
-		//
+			
 		Document doc=Jsoup.parse(page.toString());
-
+		
+		Log log=context.getLog();
+		log.log(doc.title());
+		
 		Elements elements=doc.select("a");
 
 		Iterator<Element> it=elements.iterator();
@@ -92,5 +100,17 @@ public class StandardParser implements Parser{
 	public void stop() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setContext(Context context) {
+		// TODO Auto-generated method stub
+		this.context=context;
+	}
+
+	@Override
+	public Context getContext() {
+		// TODO Auto-generated method stub
+		return this.context;
 	}
 }

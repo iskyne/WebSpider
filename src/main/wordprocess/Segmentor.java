@@ -21,8 +21,8 @@ import java.util.Queue;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 
-import main.container.Context;
-import main.container.StandardContext;
+import main.context.Context;
+import main.context.StandardContext;
 import main.core.Lifecycle;
 import main.java.resource.Dictionary;
 import main.java.resource.StandardDictionary;
@@ -213,6 +213,8 @@ public class Segmentor implements Runnable,Lifecycle{
 			StringBuffer text = null;
 			try {
 				text = textQueue.take();
+				//context.getLog().log(text.toString());
+				System.out.println(text);
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -225,7 +227,7 @@ public class Segmentor implements Runnable,Lifecycle{
 				e.printStackTrace();
 			}
 			for(WordFrequencyEntry<Integer,String> entry:entrys){
-				System.out.println(entry.getK()+" "+entry.getV());
+				//System.out.println(entry.getK()+" "+entry.getV());
 			}
 		}
 	}
