@@ -24,7 +24,7 @@ public class Container implements Lifecycle{
 	/*
 	 * the blocking queue for store the text which not be seperatored
 	 */
-	private BlockingQueue<StringBuffer> TextDataQueue=new ArrayBlockingQueue<StringBuffer>(Constant.DEFAULT_TEXTDATA_BLOCKINGQUEUE_SIZE,false);
+	private BlockingQueue<StringBuffer> Tex tDataQueue=new ArrayBlockingQueue<StringBuffer>(Constant.DEFAULT_TEXTDATA_BLOCKINGQUEUE_SIZE,false);
 	
 	/*
 	 * the thread pool processing spider task
