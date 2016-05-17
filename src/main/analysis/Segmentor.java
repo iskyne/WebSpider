@@ -1,4 +1,4 @@
-package main.wordprocess;
+package main.analysis;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,7 +28,7 @@ import main.java.resource.Dictionary;
 import main.java.resource.StandardDictionary;
 import jeasy.analysis.MMAnalyzer;
 
-public class Segmentor implements Runnable,Lifecycle{
+public class Segmentor implements Runnable{
 	/*
 	 * container
 	 */
@@ -182,7 +182,6 @@ public class Segmentor implements Runnable,Lifecycle{
 		
 	}
 	
-	@Override
 	public synchronized void start() {
 		// TODO Auto-generated method stub
 		if(context==null){
@@ -192,7 +191,7 @@ public class Segmentor implements Runnable,Lifecycle{
 		this.stop=false;
 	}
 	
-	@Override
+
 	public synchronized void stop() {
 		// TODO Auto-generated method stub
 		this.stop=true;
@@ -213,8 +212,6 @@ public class Segmentor implements Runnable,Lifecycle{
 			StringBuffer text = null;
 			try {
 				text = textQueue.take();
-				//context.getLog().log(text.toString());
-				System.out.println(text);
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -227,7 +224,7 @@ public class Segmentor implements Runnable,Lifecycle{
 				e.printStackTrace();
 			}
 			for(WordFrequencyEntry<Integer,String> entry:entrys){
-				//System.out.println(entry.getK()+" "+entry.getV());
+				System.out.println(entry.getK()+" "+entry.getV());
 			}
 		}
 	}

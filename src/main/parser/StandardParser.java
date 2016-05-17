@@ -21,9 +21,8 @@ import main.store.TransferBuffer;
 import main.store.WebPageBuffer;
 import main.util.Constant;
 
-public class StandardParser implements Parser{
+public class StandardParser extends AbstractParser{
 	
-	private Context context;
 	/*
 	 * get the urls and article in the page.
 	 */

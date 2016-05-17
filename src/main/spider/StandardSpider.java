@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import main.context.Context;
 import main.context.StandardContext;
+import main.core.AbstractHandler;
+import main.core.Container;
 import main.core.Lifecycle;
 import main.parser.Parser;
 import main.parser.StandardParser;
@@ -16,9 +18,8 @@ import main.store.Resource;
 import main.store.TransferBuffer;
 import main.store.WebPageBuffer;
 
-public class StandardSpider implements Spider,Runnable{
+public class StandardSpider extends AbstractHandler implements Spider{
 	
-	private Context context=null;
 	
 	private BlockingQueue<URL> urlsQueue=null;
 	
@@ -70,9 +71,10 @@ public class StandardSpider implements Spider,Runnable{
 			}
 		}
 	}
-
+	
+	
 	@Override
-	public synchronized void start() {
+	public void initialize() {
 		// TODO Auto-generated method stub
 		if(context==null){
 			setContext(StandardContext.getInstance());
@@ -83,28 +85,6 @@ public class StandardSpider implements Spider,Runnable{
 		this.parser=context.getParser();
 		this.stop=false;
 	}
-
-	@Override
-	public synchronized void stop() {
-		// TODO Auto-generated method stub
-		clear();
-		this.stop=true;
-	}
-	
-	/*
-	 * set the container
-	 */
-	public void setContext(Context context){
-		this.context=context;
-	}
-	
-	/*
-	 * return the container
-	 */
-	public Context getContext(){
-		return this.context;
-	}
-	
 	/*
 	 * clear the spider object for reusing.
 	 */
@@ -114,20 +94,46 @@ public class StandardSpider implements Spider,Runnable{
 		this.urlsQueue=null;
 	}
 	
-	public static void main(String args[]){
-		StandardSpider spider=new StandardSpider();
-		try {
-			System.out.println(spider.crawlContent(
-					new URL("file:\\Users\\Administrator\\Desktop\\http _opinion.people.com.cn_n_2014_0113_c1003-24095314.html")));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	@Override
+	public synchronized void start() {
+		// TODO Auto-generated method stub
+		this.stop=false;
 	}
 
 	@Override
-	public void initialize() {
+	public synchronized void stop() {
+		// TODO Auto-generated method stub
+		clear();
+		this.stop=true;
+	}
+
+	@Override
+	public Container getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addChild(Container container) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void removeChild(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clearChild() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public Container getChild(int index) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

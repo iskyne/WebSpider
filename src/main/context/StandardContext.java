@@ -9,17 +9,20 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import main.analysis.Segmentor;
 import main.core.Container;
+import main.core.Handler;
 import main.core.Lifecycle;
+import main.core.ReusableHandler;
 import main.logger.FileLog;
 import main.logger.Log;
 import main.parser.Parser;
 import main.parser.StandardParser;
 import main.spider.StandardSpider;
+import main.spider.StandardSpiderFactory;
 import main.util.Constant;
-import main.wordprocess.Segmentor;
 
-public class StandardContext implements Context{
+public class StandardContext extends AbstractContext{
 	/*
 	 * the blocking queue for store the urls which not be processed
 	 */
@@ -31,14 +34,9 @@ public class StandardContext implements Context{
 	private BlockingQueue<StringBuffer> TextDataQueue=new ArrayBlockingQueue<StringBuffer>(Constant.DEFAULT_TEXTDATA_BLOCKINGQUEUE_SIZE,false);
 	
 	/*
-	 * the thread pool processing spider task
+	 * spider factory focus on crawl web page
 	 */
-	private Executor spiderWorkers=Executors.newFixedThreadPool(Constant.DEFAULT_THREADPOOL_SIZE);
-	
-	/*
-	 * the data structure storing spiders 
-	 */
-	private Stack<StandardSpider> spiders=new Stack<StandardSpider>();
+	private Handler spiderFactory ;
 	
 	/*
 	 * the thread pool processing separator words
@@ -79,19 +77,16 @@ public class StandardContext implements Context{
 	 */
 	@Override
 	public void start(){
-		StandardContext container=StandardContext.getInstance();
-		for(int i=0;i<Constant.DEFAULT_SPIDERS_NUMBERS;i++){
-			StandardSpider spider=new StandardSpider();
-			spider.start();
-			spiders.push(spider);
-			container.spiderWorkers.execute(spider);
-		}
+		spiderFactory=new StandardSpiderFactory();
+		spiderFactory.setContext(this);
+		((ReusableHandler)spiderFactory).initialize();
+		((ReusableHandler)spiderFactory).start();
 		
 		for(int i=0;i<Constant.DEFAULT_SEGMENT_PROCESSOR_NUMBERS;i++){
 			Segmentor segmentor=new Segmentor();
 			segmentor.start();
 			Segmentors.push(segmentor);
-			container.segmentWorkers.execute(segmentor);
+			segmentWorkers.execute(segmentor);
 		}
 		
 		parser.setContext(this);

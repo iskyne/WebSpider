@@ -2,7 +2,7 @@ package main.core;
 
 import main.context.Context;
 
-public interface Handler extends Lifecycle{
+public interface Handler extends Container{
 	/*
 	 * must set the context container for the handler
 	 */
@@ -12,4 +12,6 @@ public interface Handler extends Lifecycle{
 	 * return the context
 	 */
 	public Context getContext();
+	
+	
 }

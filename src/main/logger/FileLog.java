@@ -9,9 +9,7 @@ import java.util.Date;
 
 import main.context.Context;
 
-public class FileLog implements Log {
-	
-	private Context context;
+public class FileLog extends AbstractLog {
 	
 	private String logPath;
 	
