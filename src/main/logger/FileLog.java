@@ -23,14 +23,7 @@ public class FileLog extends AbstractLog {
 		return LogHolder.log;
 	}
 	private FileLog(){
-		String dateStr=getDateStr();
-		logPath=System.getProperty("user.dir")+"/log/log."+getDateStr();
-		try {
-			logWriter=new PrintWriter(new FileWriter(new File(logPath),true));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		initialize();
 	}
 	
 	/*
@@ -60,6 +53,19 @@ public class FileLog extends AbstractLog {
 	public Context getContext() {
 		// TODO Auto-generated method stub
 		return this.context;
+	}
+	
+	@Override
+	public void initialize() {
+		// TODO Auto-generated method stub
+		String dateStr=getDateStr();
+		logPath=System.getProperty("user.dir")+"/log/log."+getDateStr();
+		try {
+			logWriter=new PrintWriter(new FileWriter(new File(logPath),true));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

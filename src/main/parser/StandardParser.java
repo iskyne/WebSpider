@@ -34,6 +34,10 @@ public class StandardParser extends AbstractParser{
 		return ParserHolder.instance;
 	}
 	
+	public StandardParser(){
+		initialize();
+	}
+	
 	public TransferBuffer parse(StringBuffer page) throws MalformedURLException{
 		//System.out.println(page.toString().substring(0, 100));
 		TransferBuffer result=new WebPageBuffer();
@@ -88,7 +92,13 @@ public class StandardParser extends AbstractParser{
 		}
 		return articleContent;
 	}
-
+	
+	@Override
+	public void initialize() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub

@@ -2,6 +2,11 @@ package main.core;
 
 public interface Lifecycle {
 	/*
+	 * initialize 
+	 */
+	public void initialize();
+	
+	/*
 	 * start the component
 	 */
 	public void start();

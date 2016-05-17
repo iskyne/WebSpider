@@ -73,6 +73,14 @@ public class StandardContext extends AbstractContext{
 	}
 	
 	/*
+	 * initialize the context;
+	 */
+	@Override
+	public void initialize(){
+		
+	}
+	
+	/*
 	 * start the container
 	 */
 	@Override
