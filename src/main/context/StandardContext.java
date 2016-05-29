@@ -10,6 +10,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import main.analysis.Segmentor;
+import main.core.AbstractHandler;
 import main.core.Container;
 import main.core.Handler;
 import main.core.Lifecycle;
@@ -18,25 +19,33 @@ import main.logger.FileLog;
 import main.logger.Log;
 import main.parser.Parser;
 import main.parser.StandardParser;
+import main.resourceFactory.ResourceFactory;
+import main.resourceFactory.StandardBlockingResourceFactory;
 import main.spider.StandardSpider;
 import main.spider.StandardSpiderFactory;
+import main.store.DataBaseStore;
 import main.util.Constant;
 
 public class StandardContext extends AbstractContext{
 	/*
 	 * the blocking queue for store the urls which not be processed
 	 */
-	private BlockingQueue<URL> URLQueue=new ArrayBlockingQueue<URL>(Constant.DEFAULT_URL_BLOCKINGQUEUE_SIZE,false);
+	private ResourceFactory<URL> urlFactory=new StandardBlockingResourceFactory<URL>();
 	
 	/*
 	 * the blocking queue for store the text which not be seperatored
 	 */
-	private BlockingQueue<StringBuffer> TextDataQueue=new ArrayBlockingQueue<StringBuffer>(Constant.DEFAULT_TEXTDATA_BLOCKINGQUEUE_SIZE,false);
+	private ResourceFactory<StringBuffer> TextFactory=new StandardBlockingResourceFactory<StringBuffer>();
 	
 	/*
 	 * spider factory focus on crawl web page
 	 */
 	private Handler spiderFactory ;
+	
+	/*
+	 * segmentor factory
+	 */
+	private Handler dataBaseStore;
 	
 	/*
 	 * the thread pool processing separator words
@@ -51,7 +60,7 @@ public class StandardContext extends AbstractContext{
 	/*
 	 *  charset
 	 */
-	public static final Charset utf8Charset=Charset.forName("utf-8");
+	public static final Charset utf8Charset=Charset.forName("GB2312");
 	
 	/*
 	 * the web page parser
@@ -77,7 +86,8 @@ public class StandardContext extends AbstractContext{
 	 */
 	@Override
 	public void initialize(){
-		
+		((Handler) this.urlFactory).initialize();
+		((Handler) this.TextFactory).initialize();
 	}
 	
 	/*
@@ -90,12 +100,20 @@ public class StandardContext extends AbstractContext{
 		((ReusableHandler)spiderFactory).initialize();
 		((ReusableHandler)spiderFactory).start();
 		
-		for(int i=0;i<Constant.DEFAULT_SEGMENT_PROCESSOR_NUMBERS;i++){
-			Segmentor segmentor=new Segmentor();
-			segmentor.start();
-			Segmentors.push(segmentor);
-			segmentWorkers.execute(segmentor);
-		}
+//		for(int i=0;i<Constant.DEFAULT_SEGMENT_PROCESSOR_NUMBERS;i++){
+//			Segmentor segmentor=new Segmentor();
+//			segmentor.start();
+//			Segmentors.push(segmentor);
+//			segmentWorkers.execute(segmentor);
+//		}
+		
+		dataBaseStore= new DataBaseStore();
+		dataBaseStore.setContext(this);
+		dataBaseStore.initialize();
+		dataBaseStore.start();
+		
+		((Handler) urlFactory).setContext(this);
+		((Handler) TextFactory).setContext(this);
 		
 		parser.setContext(this);
 		log.setContext(this);
@@ -108,25 +126,23 @@ public class StandardContext extends AbstractContext{
 	}
 	
 	/*
-	 * return the URLs queue
-	 */
-	public BlockingQueue<URL> getURLQueue(){
-		return this.URLQueue;
-	}
-	
-	/*
-	 * return the text queue
-	 */
-	public BlockingQueue<StringBuffer> getTextQueue(){
-		return this.TextDataQueue;
-	}
-	
-	/*
 	 * (non-Javadoc)
 	 * get the parser
 	 */
 	public Parser getParser(){
 		return this.parser;
+	}
+	
+	@Override
+	public ResourceFactory getURLQueue() {
+		// TODO Auto-generated method stub
+		return (ResourceFactory) this.urlFactory;
+	}
+
+	@Override
+	public ResourceFactory getTextQueue() {
+		// TODO Auto-generated method stub
+		return (ResourceFactory) this.TextFactory;
 	}
 	
 	@Override
@@ -140,10 +156,11 @@ public class StandardContext extends AbstractContext{
 		return null;
 	}
 	
-	public static void main(String args[]){
+	public static void main(String args[]) throws InterruptedException{
 		StandardContext context=StandardContext.getInstance();
 		try {
-			context.getURLQueue().add(new URL("http://localhost:8080/WebServer/"));
+			context.initialize();
+			context.getURLQueue().put((new URL("http://www.people.com.cn/")));
 			context.start();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block

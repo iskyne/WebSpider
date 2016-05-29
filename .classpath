@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="E:/IskyneWorkSpace/Java/工具jar/je-analysis-1.5.3.jar"/>
 	<classpathentry kind="lib" path="E:/IskyneWorkSpace/Java/工具jar/apache-lucene.jar"/>
 	<classpathentry kind="lib" path="E:/IskyneWorkSpace/Java/工具jar/jsoup-1.8.3.jar"/>
+	<classpathentry kind="lib" path="E:/IskyneWorkSpace/Java/工具jar/mybatis-3.0.2.jar" sourcepath="E:/IskyneWorkSpace/Java/Open source/mybatis-3-master.zip"/>
+	<classpathentry kind="lib" path="E:/IskyneWorkSpace/DB/mysql-connector-java-5.1.27/mysql-connector-java-5.1.27-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

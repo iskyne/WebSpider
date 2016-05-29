@@ -2,10 +2,15 @@ package main.store;
 
 @SuppressWarnings("rawtypes")
 public class StringResource implements Resource{
+	
 	private StringBuffer buffer;
 	
 	public StringResource(){
 		buffer=new StringBuffer();
+	}
+	
+	public StringResource(StringBuffer sb){
+		this.buffer=sb;
 	}
 	
 	public StringResource(String text){

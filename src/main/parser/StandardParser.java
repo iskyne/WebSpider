@@ -53,7 +53,7 @@ public class StandardParser extends AbstractParser{
 		while(it.hasNext()){
 			Element element = it.next();
 			String urlStr=element.attr("href");
-			if(urlStr.indexOf("http://")==0){
+			if(urlStr.indexOf("http://")==0&&urlStr.contains("people.com.cn")){
 				URL url=new URL(urlStr);
 				result.addUrl(url);
 			}
@@ -61,7 +61,9 @@ public class StandardParser extends AbstractParser{
 		Element element1=doc.select("body").first();
 
 		if(element1!=null&&element1.hasText()){
-			result.addResource(new StringResource(element1.text()));
+			result.addResource(new StringResource(new StringBuffer(doc.title())
+			.append(System.getProperty("line.separator"))
+			.append(element1.text())));
 		}
 		//
 		return result;

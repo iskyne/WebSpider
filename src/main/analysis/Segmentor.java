@@ -26,6 +26,7 @@ import main.context.StandardContext;
 import main.core.Lifecycle;
 import main.java.resource.Dictionary;
 import main.java.resource.StandardDictionary;
+import main.resourceFactory.ResourceFactory;
 import jeasy.analysis.MMAnalyzer;
 
 public class Segmentor implements Runnable{
@@ -37,7 +38,7 @@ public class Segmentor implements Runnable{
 	/*
 	 * the text queue
 	 */
-	private BlockingQueue<StringBuffer> textQueue=null;
+	private ResourceFactory textQueue=null;
 	
 	/*
 	 * the word segment
@@ -211,7 +212,7 @@ public class Segmentor implements Runnable{
 		while(!stop){
 			StringBuffer text = null;
 			try {
-				text = textQueue.take();
+				text = (StringBuffer) textQueue.get();
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import main.core.Container;
 import main.logger.Log;
 import main.parser.Parser;
+import main.resourceFactory.ResourceFactory;
 
 public interface Context extends Container{
 	/*
@@ -16,12 +17,12 @@ public interface Context extends Container{
 	/*
 	 * get the urls queue
 	 */
-	public BlockingQueue<URL> getURLQueue();
+	public ResourceFactory getURLQueue();
 	
 	/*
 	 * get the text queue
 	 */
-	public BlockingQueue<StringBuffer> getTextQueue();
+	public ResourceFactory getTextQueue();
 	
 	/*
 	 * get the logger

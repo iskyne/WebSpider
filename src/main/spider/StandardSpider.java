@@ -14,6 +14,7 @@ import main.core.Container;
 import main.core.Lifecycle;
 import main.parser.Parser;
 import main.parser.StandardParser;
+import main.resourceFactory.ResourceFactory;
 import main.store.Resource;
 import main.store.TransferBuffer;
 import main.store.WebPageBuffer;
@@ -21,9 +22,9 @@ import main.store.WebPageBuffer;
 public class StandardSpider extends AbstractHandler implements Spider{
 	
 	
-	private BlockingQueue<URL> urlsQueue=null;
+	private ResourceFactory<URL> urlsQueue=null;
 	
-	private BlockingQueue<StringBuffer> textQueue=null;
+	private ResourceFactory<StringBuffer> textQueue=null;
 	
 	private Parser parser=null;
 	/*
@@ -54,7 +55,7 @@ public class StandardSpider extends AbstractHandler implements Spider{
 		while(!stop){
 			try {
 				Thread.currentThread().sleep(2000);
-				URL url=urlsQueue.take();
+				URL url=urlsQueue.get();
 				TransferBuffer parseResult=crawlContent(url);
 				for(URL u:parseResult.getUrls()){
 					urlsQueue.put(u);
@@ -63,6 +64,8 @@ public class StandardSpider extends AbstractHandler implements Spider{
 				for(Resource<StringBuffer> resource:parseResult.getResources()){
 					textQueue.put(resource.getResource());
 				}
+				System.out.println("current url size"+urlsQueue.size());
+				System.out.println("current text size"+textQueue.size());
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
