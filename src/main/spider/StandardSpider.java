@@ -12,6 +12,7 @@ import main.context.StandardContext;
 import main.core.AbstractHandler;
 import main.core.Container;
 import main.core.Lifecycle;
+import main.logger.Log;
 import main.parser.Parser;
 import main.parser.StandardParser;
 import main.resourceFactory.ResourceFactory;
@@ -27,6 +28,10 @@ public class StandardSpider extends AbstractHandler implements Spider{
 	private ResourceFactory<StringBuffer> textQueue=null;
 	
 	private Parser parser=null;
+	
+	private Log log=null;
+	
+	private StandardBloomFilter urlsFilter=null;
 	/*
 	 * indicates the working status
 	 */
@@ -56,16 +61,21 @@ public class StandardSpider extends AbstractHandler implements Spider{
 			try {
 				Thread.currentThread().sleep(2000);
 				URL url=urlsQueue.get();
-				TransferBuffer parseResult=crawlContent(url);
-				for(URL u:parseResult.getUrls()){
-					urlsQueue.put(u);
+				if(!urlsFilter.contain(url.toString())){
+					TransferBuffer parseResult=crawlContent(url);
+					for(URL u:parseResult.getUrls()){
+						urlsFilter.add(u.toString());
+						urlsQueue.put(u);
+					}
+	
+					for(Resource<StringBuffer> resource:parseResult.getResources()){
+						textQueue.put(resource.getResource());
+					}
+					log.log("current url size : "+urlsQueue.size());
+					log.log("current text size : "+textQueue.size());
+					log.log(Thread.currentThread().toString()+" "+Thread.currentThread().isAlive());
 				}
-
-				for(Resource<StringBuffer> resource:parseResult.getResources()){
-					textQueue.put(resource.getResource());
-				}
-				System.out.println("current url size"+urlsQueue.size());
-				System.out.println("current text size"+textQueue.size());
+			
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -86,6 +96,8 @@ public class StandardSpider extends AbstractHandler implements Spider{
 		this.urlsQueue=context.getURLQueue();
 		this.textQueue=context.getTextQueue();
 		this.parser=context.getParser();
+		this.log=context.getLog();
+		this.urlsFilter=((StandardContext)context).getUrlFilter();
 		this.stop=false;
 	}
 	/*

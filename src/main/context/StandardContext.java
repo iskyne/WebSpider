@@ -21,6 +21,7 @@ import main.parser.Parser;
 import main.parser.StandardParser;
 import main.resourceFactory.ResourceFactory;
 import main.resourceFactory.StandardBlockingResourceFactory;
+import main.spider.StandardBloomFilter;
 import main.spider.StandardSpider;
 import main.spider.StandardSpiderFactory;
 import main.store.DataBaseStore;
@@ -33,7 +34,7 @@ public class StandardContext extends AbstractContext{
 	private ResourceFactory<URL> urlFactory=new StandardBlockingResourceFactory<URL>();
 	
 	/*
-	 * the blocking queue for store the text which not be seperatored
+	 * the blocking queue for store the text which not be separated
 	 */
 	private ResourceFactory<StringBuffer> TextFactory=new StandardBlockingResourceFactory<StringBuffer>();
 	
@@ -42,6 +43,10 @@ public class StandardContext extends AbstractContext{
 	 */
 	private Handler spiderFactory ;
 	
+	/*
+	 * bloom filter for skipping the repeat url
+	 */
+	private StandardBloomFilter urlFilter;
 	/*
 	 * segmentor factory
 	 */
@@ -86,8 +91,10 @@ public class StandardContext extends AbstractContext{
 	 */
 	@Override
 	public void initialize(){
+		((StandardBlockingResourceFactory<URL>) urlFactory).setMaxSize(10000000);
 		((Handler) this.urlFactory).initialize();
 		((Handler) this.TextFactory).initialize();
+		this.urlFilter=StandardBloomFilter.getInstance();
 	}
 	
 	/*
@@ -145,6 +152,14 @@ public class StandardContext extends AbstractContext{
 		return (ResourceFactory) this.TextFactory;
 	}
 	
+	public StandardBloomFilter getUrlFilter() {
+		return urlFilter;
+	}
+
+	public void setUrlFilter(StandardBloomFilter urlFilter) {
+		this.urlFilter = urlFilter;
+	}
+	
 	@Override
 	public Log getLog(){
 		return this.log;
@@ -156,15 +171,21 @@ public class StandardContext extends AbstractContext{
 		return null;
 	}
 	
-	public static void main(String args[]) throws InterruptedException{
+	public static void main(String args[]){
 		StandardContext context=StandardContext.getInstance();
 		try {
 			context.initialize();
 			context.getURLQueue().put((new URL("http://www.people.com.cn/")));
 			context.start();
+			//Thread.sleep(10000);
+			//context.getLog().log("---------"+context.getTextQueue().size()+" "+context.getURLQueue().size()+"-------------- ");
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch(InterruptedException e){
+			e.printStackTrace();
 		}
 	}
+
+
 }

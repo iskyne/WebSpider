@@ -61,7 +61,7 @@ public class FileLog extends AbstractLog {
 		String dateStr=getDateStr();
 		logPath=System.getProperty("user.dir")+"/log/log."+getDateStr();
 		try {
-			logWriter=new PrintWriter(new FileWriter(new File(logPath),true));
+			logWriter=new PrintWriter(new FileWriter(new File(logPath),true),true);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,15 +96,14 @@ public class FileLog extends AbstractLog {
 		StackTraceElement[] elements=Thread.currentThread().getStackTrace();
 		StackTraceElement element=elements[elements.length-1];
 		String firstLine=new StringBuffer(new Date(System.currentTimeMillis()).toString()).
-				append("----- Class Name :").
-				append(element.getClassName()).
-				append("----- Method Name :").
-				append(element.getMethodName()).
+				//append("----- Class Name :").
+				//append(element.getClassName()).
+				//append("----- Method Name :").
+				//append(element.getMethodName()).
 				append("------").
 				toString();
 		logWriter.println(firstLine);
 		logWriter.println(msg);
-		logWriter.close();
 	}
 	
 	public static void main(String args[]){

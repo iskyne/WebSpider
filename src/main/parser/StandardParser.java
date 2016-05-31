@@ -45,7 +45,7 @@ public class StandardParser extends AbstractParser{
 		Document doc=Jsoup.parse(page.toString());
 		
 		Log log=context.getLog();
-		log.log(doc.title());
+		//log.log(doc.title());
 		
 		Elements elements=doc.select("a");
 
