@@ -9,6 +9,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import main.analysis.Segmentor;
 import main.core.AbstractHandler;
 import main.core.Container;
@@ -70,18 +74,24 @@ public class StandardContext extends AbstractContext{
 	/*
 	 * the web page parser
 	 */
-	public final Parser parser=StandardParser.getInstance();
+	public Parser parser;
+	
 	/*
 	 * logger
 	 */
-	public Log log=FileLog.getInstance();
+	public Log log;
+	
+	/*
+	 * Bean factory 
+	 */
+	private ApplicationContext applicationContext;
 	/*
 	 * singleton design pattern
 	 */	
 	private static class ContainerHolder{
 		private static final StandardContext instance=new StandardContext();
 	}
-	
+
 	public static StandardContext getInstance(){
 		return ContainerHolder.instance;
 	}
@@ -91,10 +101,30 @@ public class StandardContext extends AbstractContext{
 	 */
 	@Override
 	public void initialize(){
+		setApplicationContext(new ClassPathXmlApplicationContext("ApplicationContext.xml"));
+		
+		this.urlFilter=(StandardBloomFilter) applicationContext.getBean("urlsFilter");
+		this.parser=(Parser) applicationContext.getBean("parser");
+		this.log=(Log) applicationContext.getBean("log");
+		this.dataBaseStore= (Handler) applicationContext.getBean("databaseStore");
+		this.spiderFactory=(Handler) applicationContext.getBean("spiderFactory");
+		
 		((StandardBlockingResourceFactory<URL>) urlFactory).setMaxSize(10000000);
 		((Handler) this.urlFactory).initialize();
+		((StandardBlockingResourceFactory<URL>) urlFactory).setMaxSize(100000);
 		((Handler) this.TextFactory).initialize();
-		this.urlFilter=StandardBloomFilter.getInstance();
+		
+		dataBaseStore.setContext(this);
+		dataBaseStore.initialize();
+		
+		((Handler) urlFactory).setContext(this);
+		((Handler) TextFactory).setContext(this);
+		
+		parser.setContext(this);
+		log.setContext(this);
+		
+		spiderFactory.setContext(this);
+		((ReusableHandler)spiderFactory).initialize();
 	}
 	
 	/*
@@ -102,28 +132,9 @@ public class StandardContext extends AbstractContext{
 	 */
 	@Override
 	public void start(){
-		spiderFactory=new StandardSpiderFactory();
-		spiderFactory.setContext(this);
-		((ReusableHandler)spiderFactory).initialize();
 		((ReusableHandler)spiderFactory).start();
 		
-//		for(int i=0;i<Constant.DEFAULT_SEGMENT_PROCESSOR_NUMBERS;i++){
-//			Segmentor segmentor=new Segmentor();
-//			segmentor.start();
-//			Segmentors.push(segmentor);
-//			segmentWorkers.execute(segmentor);
-//		}
-		
-		dataBaseStore= new DataBaseStore();
-		dataBaseStore.setContext(this);
-		dataBaseStore.initialize();
 		dataBaseStore.start();
-		
-		((Handler) urlFactory).setContext(this);
-		((Handler) TextFactory).setContext(this);
-		
-		parser.setContext(this);
-		log.setContext(this);
 	}
 	
 	@Override
@@ -131,13 +142,26 @@ public class StandardContext extends AbstractContext{
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * get the parser
 	 */
 	public Parser getParser(){
 		return this.parser;
+	}
+	
+	public void setParser(Parser parser){
+		this.parser=parser;
+	}
+	
+
+	public ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
+
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
 	}
 	
 	@Override
@@ -175,7 +199,7 @@ public class StandardContext extends AbstractContext{
 		StandardContext context=StandardContext.getInstance();
 		try {
 			context.initialize();
-			context.getURLQueue().put((new URL("http://www.people.com.cn/")));
+			context.getURLQueue().put((new URL("http://localhost:8080/WebServer")));
 			context.start();
 			//Thread.sleep(10000);
 			//context.getLog().log("---------"+context.getTextQueue().size()+" "+context.getURLQueue().size()+"-------------- ");
@@ -186,6 +210,4 @@ public class StandardContext extends AbstractContext{
 			e.printStackTrace();
 		}
 	}
-
-
 }

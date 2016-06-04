@@ -16,10 +16,10 @@ public class Constant {
 	public static final int DEFAULT_TEXTDATA_BLOCKINGQUEUE_SIZE = 10000;
 	
 	//the default number of spiders in container
-	public static final int DEFAULT_SPIDERS_NUMBERS = 50;
+	public static final int DEFAULT_SPIDERS_NUMBERS = 100;
 	
 	//the default number of spider thread pool size
-	public static final int DEFAULT_THREADPOOL_SIZE = 50;
+	public static final int DEFAULT_THREADPOOL_SIZE = 100;
 	
 	//the default number of segment processor 
 	public static final int DEFAULT_SEGMENT_PROCESSOR_NUMBERS = 50;

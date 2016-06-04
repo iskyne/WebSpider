@@ -61,20 +61,22 @@ public class StandardSpider extends AbstractHandler implements Spider{
 			try {
 				Thread.currentThread().sleep(2000);
 				URL url=urlsQueue.get();
-				if(!urlsFilter.contain(url.toString())){
-					TransferBuffer parseResult=crawlContent(url);
-					for(URL u:parseResult.getUrls()){
+				TransferBuffer parseResult=crawlContent(url);
+				for(URL u:parseResult.getUrls()){
+					if(!urlsFilter.contain(u.toString())){
 						urlsFilter.add(u.toString());
 						urlsQueue.put(u);
 					}
+				}
 	
-					for(Resource<StringBuffer> resource:parseResult.getResources()){
+				for(Resource<StringBuffer> resource:parseResult.getResources()){
+					if(resource.getResource()!=null){
 						textQueue.put(resource.getResource());
 					}
-					log.log("current url size : "+urlsQueue.size());
-					log.log("current text size : "+textQueue.size());
-					log.log(Thread.currentThread().toString()+" "+Thread.currentThread().isAlive());
 				}
+				log.log("current url size : "+urlsQueue.size());
+				log.log("current text size : "+textQueue.size());
+				log.log(Thread.currentThread().toString()+" "+Thread.currentThread().isAlive());
 			
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

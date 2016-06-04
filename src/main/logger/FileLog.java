@@ -15,14 +15,12 @@ public class FileLog extends AbstractLog {
 	
 	private PrintWriter logWriter;
 	
-	private static class LogHolder{
-		private static final FileLog log=new FileLog();
+	public FileLog(){
+		this(INFO);
 	}
 	
-	public static Log getInstance(){
-		return LogHolder.log;
-	}
-	private FileLog(){
+	public FileLog(int level){
+		setLogLevel(level);
 		initialize();
 	}
 	
@@ -93,21 +91,29 @@ public class FileLog extends AbstractLog {
 	 */
 	@Override
 	public synchronized void log(String msg){
-		StackTraceElement[] elements=Thread.currentThread().getStackTrace();
-		StackTraceElement element=elements[elements.length-1];
-		String firstLine=new StringBuffer(new Date(System.currentTimeMillis()).toString()).
-				//append("----- Class Name :").
-				//append(element.getClassName()).
-				//append("----- Method Name :").
-				//append(element.getMethodName()).
-				append("------").
-				toString();
-		logWriter.println(firstLine);
-		logWriter.println(msg);
+		log(msg,INFO);
+	}
+	
+
+	@Override
+	public void log(String msg, int level) {
+		// TODO Auto-generated method stub
+		if(level>=logLevel){
+			String firstLine=new StringBuffer(logLevelMsg[level]).
+					append(new Date(System.currentTimeMillis()).toString()).
+					append("------").
+					toString();
+			logWriter.println(firstLine);
+			logWriter.println(msg);
+		}
 	}
 	
 	public static void main(String args[]){
-		Log log=FileLog.getInstance();
-		log.log("hello world");
+		FileLog log=new FileLog(FileLog.DEBUG);
+		log.log("hello world error",FileLog.ERROR);
+		log.log("hello world warning",FileLog.WARNING);
+		log.log("hello world debug",FileLog.DEBUG);
+		log.log("hello world info",FileLog.INFO);
+		
 	}
 }

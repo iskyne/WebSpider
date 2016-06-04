@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,17 +24,7 @@ import main.util.Constant;
 
 public class StandardParser extends AbstractParser{
 	
-	/*
-	 * get the urls and article in the page.
-	 */
-	private static class ParserHolder{
-		private static final Parser instance=new StandardParser();
-	}
-	
-	public static Parser getInstance(){
-		return ParserHolder.instance;
-	}
-	
+
 	public StandardParser(){
 		initialize();
 	}
@@ -44,7 +35,6 @@ public class StandardParser extends AbstractParser{
 			
 		Document doc=Jsoup.parse(page.toString());
 		
-		Log log=context.getLog();
 		//log.log(doc.title());
 		
 		Elements elements=doc.select("a");
@@ -58,13 +48,24 @@ public class StandardParser extends AbstractParser{
 				result.addUrl(url);
 			}
 		}
-		Element element1=doc.select("body").first();
-
-		if(element1!=null&&element1.hasText()){
-			result.addResource(new StringResource(new StringBuffer(doc.title())
-			.append(System.getProperty("line.separator"))
-			.append(element1.text())));
+		/*
+		 * select the text with tag "text_show" or "p_content"
+		 * in a web page
+		 */
+		Element textElement=null;
+		
+		textElement=doc.select("div[class=text_show]").first();
+		if(textElement==null||(!textElement.hasText())){
+			textElement=doc.select("div[id=p_content]").first();
+			if(textElement==null||(!textElement.hasText())){
+				return result;
+			}
 		}
+		
+		
+		result.addResource(new StringResource(new StringBuffer(doc.title())
+			.append(System.getProperty("line.separator"))
+			.append(textElement.text())));
 		//
 		return result;
 	} 
@@ -123,5 +124,23 @@ public class StandardParser extends AbstractParser{
 	public Context getContext() {
 		// TODO Auto-generated method stub
 		return this.context;
+	}
+	
+	public static void main(String args[]){
+		Document doc=null;
+		try {
+			doc = Jsoup.connect("http://fanfu.people.com.cn/n1/2016/0603/c64371-28410084.html")
+					.get();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Elements elements=doc.select("div[class=text_show]");
+		Element element=elements.first();
+		//System.out.println(element);
+		if(element!=null&&element.hasText()){
+			System.out.println(element.text());
+		}
+		
 	}
 }

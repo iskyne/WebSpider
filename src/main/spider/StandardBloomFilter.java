@@ -11,15 +11,7 @@ public class StandardBloomFilter {
 	private BloomFunc[] funcs;
 	private int[] seeds;
 	
-	private static class InstanceHolder{
-		private static final StandardBloomFilter instance=new StandardBloomFilter();
-	}
-	
-	public static StandardBloomFilter getInstance(){
-		return InstanceHolder.instance;
-	} 
-	
-	private StandardBloomFilter(){
+	public StandardBloomFilter(){
 		store = new BitSet(DEFAULT_SIZE);
 		funcs = new BloomFunc[BLOOM_FUNC_SIZE];
 		seeds=new int[]{7,11,13,17,31,37,61};
@@ -28,15 +20,14 @@ public class StandardBloomFilter {
 		}
 	}
 	
-	public void add(String value){
+	public synchronized void add(String value){
 		for(int i=0;i<BLOOM_FUNC_SIZE;i++){
 			int result=funcs[i].hash(value);
-			System.out.println(result);
 			store.set(result, true);
 		}
 	}
 	
-	public boolean contain(String value){
+	public synchronized boolean contain(String value){
 		for(int i=0;i<BLOOM_FUNC_SIZE;i++){
 			int result=funcs[i].hash(value);
 			if(!store.get(result)){
@@ -70,12 +61,6 @@ public class StandardBloomFilter {
 	}
 	
 	public static void main(String args[]){
-		StandardBloomFilter filter=StandardBloomFilter.getInstance();
-		filter.add("aaaaaaaaaabbbbbbbbbbbbbcccccccccccdddddddd");
-		filter.add("dddddddddbbbbbbbbbbbaaaaaaaaaaaaeeeeeeeeee");
-		System.out.println(filter.contain("dddddddddddeeeeeeeeeeeeessssssssss"));
-		System.out.println(filter.contain("dddddddddbbbbbbbbbbbaaaaaaaaaaaaeeeeeeeeee"));
-		System.out.println(filter.contain("ffffffffffffffffffffff"));
 		
 	}
 }
